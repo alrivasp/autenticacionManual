@@ -1,6 +1,6 @@
 class StoriesController < ApplicationController
   before_action :set_story, only: [:show, :edit, :update, :destroy]
-
+  before_action :find_user
   # GET /stories
   # GET /stories.json
   def index
@@ -10,6 +10,11 @@ class StoriesController < ApplicationController
   # GET /stories/1
   # GET /stories/1.json
   def show
+    
+  end
+
+  def my_stories 
+    @stories = Story.where('user_id= ?', session[:user_id])
   end
 
   # GET /stories/new
@@ -25,7 +30,7 @@ class StoriesController < ApplicationController
   # POST /stories.json
   def create
     @story = Story.new(story_params)
-
+    @story.user_id = @user.to_i
     respond_to do |format|
       if @story.save
         format.html { redirect_to @story, notice: 'Story was successfully created.' }
@@ -66,9 +71,12 @@ class StoriesController < ApplicationController
     def set_story
       @story = Story.find(params[:id])
     end
-
     # Never trust parameters from the scary internet, only allow the white list through.
     def story_params
       params.require(:story).permit(:title, :picture, :content)
+    end
+
+    def find_user
+      @user = session[:user_id]
     end
 end
